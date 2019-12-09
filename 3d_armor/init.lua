@@ -332,8 +332,8 @@ if armor.config.drop == true or armor.config.destroy == true then
 		if pos and armor.config.destroy == false then
 			minetest.after(armor.config.bones_delay, function()
 				local meta = nil
-				local maxp = vector.add(pos, 8)
-				local minp = vector.subtract(pos, 8)
+				local maxp = vector.add(pos, 16)
+				local minp = vector.subtract(pos, 16)
 				local bones = minetest.find_nodes_in_area(minp, maxp, {"bones:bones"})
 				for _, p in pairs(bones) do
 					local m = minetest.get_meta(p)
