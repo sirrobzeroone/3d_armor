@@ -99,11 +99,20 @@ armor.formspec = armor.formspec..
 if armor.config.fire_protect then
 	armor.formspec = armor.formspec.."label[5,2;"..F(S("Fire"))..":  armor_attr_fire]"
 end
+armor:register_on_damage(function(player, index, stack)
+	local name = player:get_player_name()
+	local def = stack:get_definition()
+	if name and def and def.description and stack:get_wear() > 60100 then
+		minetest.chat_send_player(name, S("Your @1 is almost broken!", def.description))
+		minetest.sound_play("default_tool_breaks", {to_player = name, gain = 2.0})
+	end
+end)
 armor:register_on_destroy(function(player, index, stack)
 	local name = player:get_player_name()
 	local def = stack:get_definition()
 	if name and def and def.description then
 		minetest.chat_send_player(name, S("Your @1 got destroyed!", def.description))
+		minetest.sound_play("default_tool_breaks", {to_player = name, gain = 2.0})
 	end
 end)
 
