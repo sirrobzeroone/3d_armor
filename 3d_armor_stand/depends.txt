@@ -2,3 +2,4 @@
 shields?
 unified_inventory?
 inventory_plus?
+sfinv?

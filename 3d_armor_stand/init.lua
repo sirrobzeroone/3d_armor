@@ -5,7 +5,7 @@ local S = armor_i18n.gettext
 local inventory_update
 if minetest.global_exists("unified_inventory") then
 	inventory_update = function(player)
-		local page = unified_inventory.current_page[name]
+		local page = unified_inventory.current_page[player:get_player_name()]
 		unified_inventory.set_inventory_formspec(player, "armor")
 		unified_inventory.get_formspec(player, "armor")
 		unified_inventory.set_inventory_formspec(player, page)
