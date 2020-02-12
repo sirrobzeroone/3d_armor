@@ -1,23 +1,65 @@
 -- support for i18n
 local S = armor_i18n.gettext
 
-local armor_stand_formspec = "size[8,7]" ..
-	default.gui_bg ..
-	default.gui_bg_img ..
-	default.gui_slots ..
-	default.get_hotbar_bg(0,3) ..
-	"list[current_name;armor_head;3,0.5;1,1;]" ..
-	"list[current_name;armor_torso;4,0.5;1,1;]" ..
-	"list[current_name;armor_legs;3,1.5;1,1;]" ..
-	"list[current_name;armor_feet;4,1.5;1,1;]" ..
-	"image[3,0.5;1,1;3d_armor_stand_head.png]" ..
-	"image[4,0.5;1,1;3d_armor_stand_torso.png]" ..
-	"image[3,1.5;1,1;3d_armor_stand_legs.png]" ..
-	"image[4,1.5;1,1;3d_armor_stand_feet.png]" ..
-	"list[current_player;main;0,3;8,1;]" ..
-	"list[current_player;main;0,4.25;8,3;8]"
+-- Update methods for supported inventories
+local inventory_update
+if minetest.global_exists("unified_inventory") then
+	inventory_update = function(player)
+		local page = unified_inventory.current_page[name]
+		unified_inventory.set_inventory_formspec(player, "armor")
+		unified_inventory.get_formspec(player, "armor")
+		unified_inventory.set_inventory_formspec(player, page)
+	end
+elseif minetest.global_exists("sfinv") then
+	inventory_update = function(player)
+		sfinv.set_player_inventory_formspec(player)
+	end
+elseif minetest.global_exists("inventory_plus") then
+	inventory_update = function(player)
+		local name = player:get_player_name()
+		local formspec = armor:get_armor_formspec(name, true)
+		local page = player:get_inventory_formspec()
+		if page:find("detached:"..name.."_armor") then
+			inventory_plus.set_inventory_formspec(player, formspec)
+		end
+	end
+else
+	inventory_update = function()end
+end
 
+-- Shields enabled?
+local shield = minetest.get_modpath("shields")
+
+-- Supported armor stand slots
 local elements = {"head", "torso", "legs", "feet"}
+if shield then
+	table.insert(elements, "shield")
+end
+
+local armor_stand_formspec = function(playername)
+	return "formspec_version[1]" ..
+		"size[" .. (shield and 11 or 8) .. ",7]" ..
+		default.gui_bg ..
+		default.gui_bg_img ..
+		default.gui_slots ..
+		default.get_hotbar_bg(0,3) ..
+		"list[context;armor_head;3,0.5;1,1;]" ..
+		"list[context;armor_torso;4,0.5;1,1;]" ..
+		"list[context;armor_legs;3,1.5;1,1;]" ..
+		"list[context;armor_feet;4,1.5;1,1;]" ..
+		(shield and "list[context;armor_shield;5,1.5;1,1;]" or "") ..
+		"image[3,0.5;1,1;3d_armor_stand_head.png]" ..
+		"image[4,0.5;1,1;3d_armor_stand_torso.png]" ..
+		"image[3,1.5;1,1;3d_armor_stand_legs.png]" ..
+		"image[4,1.5;1,1;3d_armor_stand_feet.png]" ..
+		(shield and "image[5,1.5;1,1;3d_armor_stand_shield.png]" or "") ..
+		"button_exit[6,1.5;1,1;swap;Switch]" ..
+		"list[current_player;main;0,3;8,1;]" ..
+		"list[current_player;main;0,4.25;8,3;8]" ..
+		"label[9,1;"..playername.."]" ..
+		"list[detached:"..playername.."_armor;armor;9,4.25;2,3;]" ..
+		"listring[detached:"..playername.."_armor;armor]"
+end
 
 local function drop_armor(pos)
 	local meta = minetest.get_meta(pos)
@@ -97,7 +139,7 @@ local function update_entity(pos)
 				yaw = math.pi / 2
 			end
 		end
-		object:setyaw(yaw)
+		object:set_yaw(yaw)
 		object:set_properties({textures={texture}})
 	end
 end
@@ -131,6 +173,84 @@ local function remove_hidden_node(pos)
 	if node.name == "3d_armor_stand:top" then
 		minetest.remove_node(p)
 	end
+end
+
+local elements2groups = function(t)
+	local result = {}
+	for _,v in ipairs(t) do
+		result["armor_" .. v] = false
+	end
+	return result
+end
+
+local take_player_items = function(inv)
+	local result = {}
+	local slots = elements2groups(elements)
+	for i = 1, inv:get_size('armor') do
+		local stack = inv:get_stack("armor", i)
+		local def = stack:get_definition()
+		local groups = def and def.groups or nil
+		if groups then
+			for slot,used in pairs(slots) do
+				if not used and groups[slot] then
+					slots[slot] = true
+					result[slot] = {index=table.maxn(result)+1, stack=stack}
+					inv:set_stack("armor", i, nil)
+					break
+				end
+			end
+		end
+	end
+	return result
+end
+
+local take_stand_items = function(inv)
+	local result = {}
+	for i, element in ipairs(elements) do
+		local stack = inv:get_stack("armor_"..element, 1)
+		if not stack:is_empty() then
+			table.insert(result, stack)
+			inv:set_stack("armor_"..element, 1, nil)
+		end
+	end
+	return result
+end
+
+local function swap_armor(pos, player)
+
+	-- Collect player items removing them from inventory
+	local player_inv = minetest.get_inventory({type='detached',name=player:get_player_name()..'_armor'})
+	local player_items = take_player_items(player_inv)
+
+	-- Collect stand items removing them from inventory
+	local stand_inv = minetest.get_meta(pos):get_inventory()
+	local stand_items = take_stand_items(stand_inv)
+
+	-- debug stuff
+	local player_items_name = {}
+	local stand_items_name = {}
+
+	local size = player_inv:get_size('armor')
+	local min = 1
+	for _,stack in ipairs(stand_items) do
+		for i = min,size do
+			if player_inv:get_stack("armor", i):is_empty() then
+				player_inv:set_stack("armor", i, stack)
+				min = i + 1
+				break
+			else
+				print('slot ' .. i .. ' in use, trying to add ' .. stack:get_name())
+			end
+		end
+	end
+	for slot,data in pairs(player_items) do
+		-- save data.index into armor stand meta to keep ordering next time
+		stand_inv:set_stack(slot, 1, data.stack)
+	end
+
+	-- update inventories managed by supported inventory mods
+	update_entity(pos)
+	inventory_update(player)
 end
 
 minetest.register_node("3d_armor_stand:top", {
@@ -167,7 +287,6 @@ minetest.register_node("3d_armor_stand:armor_stand", {
 	sounds = default.node_sound_wood_defaults(),
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
-		meta:set_string("formspec", armor_stand_formspec)
 		meta:set_string("infotext", S("Armor Stand"))
 		local inv = meta:get_inventory()
 		for _, element in pairs(elements) do
@@ -185,8 +304,16 @@ minetest.register_node("3d_armor_stand:armor_stand", {
 		return true
 	end,
 	after_place_node = function(pos, placer)
+		local meta = minetest.get_meta(pos)
+		local formspec = armor_stand_formspec(placer and placer:get_player_name() or "")
+		meta:set_string("formspec", formspec)
 		minetest.add_entity(pos, "3d_armor_stand:armor_entity")
 		add_hidden_node(pos, placer)
+	end,
+	on_receive_fields = function (pos, formname, fields, sender)
+		if fields.swap then
+			swap_armor(pos, sender)
+		end
 	end,
 	allow_metadata_inventory_put = function(pos, listname, index, stack)
 		local def = stack:get_definition() or {}
