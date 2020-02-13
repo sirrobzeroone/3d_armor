@@ -185,7 +185,6 @@ armor.set_player_armor = function(self, player)
 	local material = {count=1}
 	local preview = armor:get_preview(name)
 	local texture = "3d_armor_trans.png"
-	local textures = {}
 	local physics = {}
 	local attributes = {}
 	local levels = {}
@@ -324,8 +323,8 @@ armor.punch = function(self, player, hitter, time_from_last_punch, tool_capabili
 	local list = armor_inv:get_list("armor")
 	for i, stack in pairs(list) do
 		if stack:get_count() == 1 then
-			local name = stack:get_name()
-			local use = minetest.get_item_group(name, "armor_use") or 0
+			local itemname = stack:get_name()
+			local use = minetest.get_item_group(itemname, "armor_use") or 0
 			local damage = use > 0
 			local def = stack:get_definition() or {}
 			if type(def.on_punched) == "function" then
@@ -373,7 +372,7 @@ armor.punch = function(self, player, hitter, time_from_last_punch, tool_capabili
 				end
 			end
 			if damage == true and hitter == "fire" then
-				damage = minetest.get_item_group(name, "flammable") > 0
+				damage = minetest.get_item_group(itemname, "flammable") > 0
 			end
 			if damage == true then
 				self:damage(player, i, stack, use)
