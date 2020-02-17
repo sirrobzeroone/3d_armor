@@ -15,19 +15,23 @@ local F = minetest.formspec_escape
 
 dofile(modpath.."/api.lua")
 
+-- integration test
+if minetest.settings:get_bool("enable_3d_armor_integration_test") then
+        dofile(modpath.."/integration_test.lua")
+end
+
+
 -- Legacy Config Support
 
 local input = io.open(modpath.."/armor.conf", "r")
 if input then
 	dofile(modpath.."/armor.conf")
 	input:close()
-	input = nil
 end
 input = io.open(worldpath.."/armor.conf", "r")
 if input then
 	dofile(worldpath.."/armor.conf")
 	input:close()
-	input = nil
 end
 for name, _ in pairs(armor.config) do
 	local global = "ARMOR_"..name:upper()
@@ -169,9 +173,9 @@ local function validate_armor_inventory(player)
 	end
 end
 
-local function init_player_armor(player)
-	local name = player:get_player_name()
-	local pos = player:get_pos()
+local function init_player_armor(initplayer)
+	local name = initplayer:get_player_name()
+	local pos = initplayer:get_pos()
 	if not name or not pos then
 		return false
 	end
@@ -214,20 +218,20 @@ local function init_player_armor(player)
 		end,
 	}, name)
 	armor_inv:set_size("armor", 6)
-	if not armor:load_armor_inventory(player) and armor.migrate_old_inventory then
-		local player_inv = player:get_inventory()
+	if not armor:load_armor_inventory(initplayer) and armor.migrate_old_inventory then
+		local player_inv = initplayer:get_inventory()
 		player_inv:set_size("armor", 6)
 		for i=1, 6 do
 			local stack = player_inv:get_stack("armor", i)
 			armor_inv:set_stack("armor", i, stack)
 		end
-		armor:save_armor_inventory(player)
+		armor:save_armor_inventory(initplayer)
 		player_inv:set_size("armor", 0)
 	end
 	for i=1, 6 do
 		local stack = armor_inv:get_stack("armor", i)
 		if stack:get_count() > 0 then
-			armor:run_callbacks("on_equip", player, i, stack)
+			armor:run_callbacks("on_equip", initplayer, i, stack)
 		end
 	end
 	armor.def[name] = {
@@ -263,7 +267,7 @@ local function init_player_armor(player)
 			end
 		end
 	end
-	armor:set_player_armor(player)
+	armor:set_player_armor(initplayer)
 	return true
 end
 
@@ -291,24 +295,31 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if not name then
 		return
 	end
+  local player_name = player:get_player_name()
 	for field, _ in pairs(fields) do
 		if string.find(field, "skins_set") then
-			minetest.after(0, function(player)
-				local skin = armor:get_player_skin(name)
-				armor.textures[name].skin = skin
-				armor:set_player_armor(player)
-			end, player)
+			minetest.after(0, function()
+        local pplayer = minetest.get_player_by_name(player_name)
+        if player then
+          local skin = armor:get_player_skin(name)
+          armor.textures[name].skin = skin
+          armor:set_player_armor(pplayer)
+        end
+			end)
 		end
 	end
 end)
 
 minetest.register_on_joinplayer(function(player)
 	default.player_set_model(player, "3d_armor_character.b3d")
-	minetest.after(0, function(player)
-		if init_player_armor(player) == false then
-			pending_players[player] = 0
+  local player_name = player:get_player_name()
+
+	minetest.after(0, function()
+    local pplayer = minetest.get_player_by_name(player_name)
+		if pplayer and init_player_armor(pplayer) == false then
+			pending_players[pplayer] = 0
 		end
-	end, player)
+	end)
 end)
 
 minetest.register_on_leaveplayer(function(player)
