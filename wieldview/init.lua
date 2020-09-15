@@ -54,6 +54,9 @@ wieldview.update_wielded_item = function(self, player)
 		return
 	end
 	if self.wielded_item[name] then
+		if player:get_meta():get_int("show_wielded_item") == 2 then
+			item = ""
+		end
 		if self.wielded_item[name] == item then
 			return
 		end
