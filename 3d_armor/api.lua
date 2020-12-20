@@ -361,7 +361,6 @@ armor.set_player_armor = function(self, player)
 end
 
 armor.punch = function(self, player, hitter, time_from_last_punch, tool_capabilities)
-	minetest.chat_send_all(armor.registered_groups["fleshy"])
 	local name, armor_inv = self:get_valid_player(player, "[punch]")
 	if not name then
 		return
@@ -445,7 +444,6 @@ armor.punch = function(self, player, hitter, time_from_last_punch, tool_capabili
 	self.def[name].state = state
 	self.def[name].count = count
 	local p_grp = player:get_armor_groups()
-	minetest.chat_send_all("end: "..tostring(p_grp.fleshy))
 end
 
 armor.damage = function(self, player, index, stack, use)
@@ -456,9 +454,7 @@ armor.damage = function(self, player, index, stack, use)
 		armor_p_cnt = armor_p_cnt + 1
 	end
 	use = math.ceil(use/armor_p_cnt)
-	--minetest.chat_send_all(stack:get_name().." pre_wear: "..stack:get_wear())
 	stack:add_wear(use)
-	--minetest.chat_send_all(stack:get_name().." post_wear: "..stack:get_wear())
 	self:run_callbacks("on_damage", player, index, stack)
 	self:set_inventory_stack(player, index, stack)
 	if stack:get_count() == 0 then
