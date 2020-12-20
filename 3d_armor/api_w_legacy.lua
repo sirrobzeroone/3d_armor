@@ -261,6 +261,14 @@ armor.set_player_armor = function(self, player)
 				local value = def.groups["armor_"..attr] or 0
 				attributes[attr] = attributes[attr] + value
 			end
+			local mat = string.match(item, "%:.+_(.+)$")
+			if material.name then
+				if material.name == mat then
+					material.count = material.count + 1
+				end
+			else
+				material.name = mat
+			end
 		end
 	end	
 -- New (Dec 2020) for working out armor_set and multiplier	
@@ -271,39 +279,47 @@ armor.set_player_armor = function(self, player)
 	local set_bonus_name
 	for loc,item in pairs(worn_armor) do
 		local item_mat = string.match(minetest.serialize(minetest.registered_items[item].groups),"armor_m_(%a+)\"]")
-		for k,set_loc in pairs(armor.config.set_elements)do
-			if set_loc == loc then
-				if item_mat ~= nil then				
+		if item_mat ~= nil then	
+			for k,name in pairs(armor.config.set_elements)do
+				if name == loc then
 					if set_worn[item_mat] == nil then
 						set_worn[item_mat] = 0
 						set_worn[item_mat] = set_worn[item_mat] + 1
 					else
 						set_worn[item_mat] = set_worn[item_mat] + 1
 					end
-				else
-					minetest.debug("WARNING:3d_armor - Registered Armor "..item.." dosen't have armor_m_\"material\" assigned")
-					if set_worn["unknown"] == nil then
-						set_worn["unknown"] = 0
-						set_worn["unknown"] = set_worn["unknown"] + 1
-					else
-						set_worn["unknown"] = set_worn["unknown"] + 1
-					end					
 				end
 			end
-		end		
-	end	
-	for mat_name,arm_piece_num in pairs(set_worn) do
-		if arm_piece_num == #armor.config.set_elements then 
-			armor_multi = armor.config.set_multiplier
-			set_bonus_name = mat_name
+		else
+			use_legacy_calc = 1
+			minetest.debug("WARNING:3d_armor - Registered Armor "..item.." dosen't have armor_m_\"material\" assigned")
 		end
+		
 	end	
+		if use_legacy_calc ~= 1 then
+			for mat_name,arm_piece_num in pairs(set_worn) do
+				if arm_piece_num == #armor.config.set_elements then 
+					armor_multi = armor.config.set_multiplier
+					set_bonus_name = mat_name
+				end
+			end	
+		end
 -- End New (Dec 2020)
 	for group, level in pairs(levels) do
-		if level > 0 then
-			level = level * armor.config.level_multiplier			
-			if armor_multi ~= 0 then
-				level = level * armor.config.set_multiplier
+		if use_legacy_calc ~= 1 then
+			if level > 0 then
+				level = level * armor.config.level_multiplier			
+					if armor_multi ~= 0 then
+						level = level * armor.config.set_multiplier
+					end
+			end
+		else
+		-- Used for legacy support were armor_item dosen't have material group armor_m_xxx assigned
+			if level > 0 then
+				level = level * armor.config.level_multiplier			
+					if material.name and material.count == #self.elements then
+						level = level * armor.config.set_multiplier
+					end
 			end
 		end
 		local base = self.registered_groups[group]
