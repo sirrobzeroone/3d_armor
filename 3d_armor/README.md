@@ -11,8 +11,8 @@
 |- - [armor_init_times](#number-of-initialization-attempts)                  |||- - - [Attributes](#attributes)
 |- - [armor_bones_delay](#armor-not-in-bones-due-to-server-lag)              |||- - - [Physics](#physics)
 |- - [armor_update_time](#how-often-player-armor-items-are-updated)          |||- - - [Durability](#durability)
-|- - [armor_drop](#drop-armor-when-a-player-dies)                            |||- - - [Armour Material](#armour-material)
-|- - [armor_destroy](#destroy-armor-when-a-player-dies)                      |||- - [Armour Functions](#armour-functions)
+|- - [armor_drop](#drop-armor-when-a-player-dies)                            |||- - - [Armor Material](#armor-material)
+|- - [armor_destroy](#destroy-armor-when-a-player-dies)                      |||- - [Armour Functions](#armor-functions)
 |- - [armor_level_multiplier](#armor-level-multiplyer)                       |||- - - [armor:set_player_armor](#armor-set_player_armor)
 |- - [armor_heal_multiplier](#armor-healing-multiplyer)                      |||- - - [armor:punch](#armor-punch)
 |- - [armor_water_protect](#enable-water-protection)                         |||- - - [armor:damage](#armor-damage)
@@ -365,15 +365,15 @@ Durability is determined by the value assigned to the group ***armor_use***. The
 ### Armor Material 
 armor_m_"material name" is used to designate the material that the armor is made from and is then used by 3d_armor to establish if the armor worn makes a set. Currently used material names are:
 
-armor_m_admin=1
-armor_m_wood=1
-armor_m_cactus=1
-armor_m_steel=1
-armor_m_bronze=1
-armor_m_gold=1
-armor_m_diamond=1
-armor_m_mithril=1
-armor_m_crystal=1
+armor_m_admin=1   
+armor_m_wood=1   
+armor_m_cactus=1   
+armor_m_steel=1   
+armor_m_bronze=1   
+armor_m_gold=1   
+armor_m_diamond=1   
+armor_m_mithril=1   
+armor_m_crystal=1   
 
  **Example** 
  
