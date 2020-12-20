@@ -377,14 +377,14 @@ armor_m_crystal=1
 
  **Example** 
  
-armor:register_armor("3d_armor:helmet_bronze", {
-	description = S("Bronze Helmet"),
-	inventory_image = "3d_armor_inv_helmet_bronze.png",
-	groups = {armor_head=1, armor_heal=6, armor_use=400,
-		physics_speed=-0.01, physics_gravity=0.01, armor_m_bronze=1},
-	armor_groups = {fleshy=10},
-	damage_groups = {cracky=3, snappy=2, choppy=2, crumbly=1, level=2},
-})
+	armor:register_armor("3d_armor:helmet_bronze", {
+		description = S("Bronze Helmet"),
+		inventory_image = "3d_armor_inv_helmet_bronze.png",
+		groups = {armor_head=1, armor_heal=6, armor_use=400,
+			physics_speed=-0.01, physics_gravity=0.01, armor_m_bronze=1},
+		armor_groups = {fleshy=10},
+		damage_groups = {cracky=3, snappy=2, choppy=2, crumbly=1, level=2},
+	})
 
 ***Note: At the moment an armor can only be made of one material***
 
