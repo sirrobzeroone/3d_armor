@@ -5,24 +5,24 @@
 |-[Overview](#overview)                                                      |||-[API](#api)|
 |-[Armor Configuration](#armor-configuration)                                |||- - [3d_Armor Item Storage](#3d_armor-item-storage)
 |- - [disable_specific_materials](#to-disable-individual-armor-materials)    |||- - [Armor Registration](#armor-registration)
-|- - [armor_init_delay](#initialization-glitches-when-a-player-first-joins)  |||- - [Registering Armor Groups](#registering-armor-groups)
-|- - [armor_init_times](#number-of-initialization-attempts)                  |||- - [Groups used by 3d_Armor](#groups-used-by-3d_armor)
-|- - [armor_bones_delay](#armor-not-in-bones-due-to-server-lag)              |||- - - [Elements](#elements)
-|- - [armor_update_time](#how-often-player-armor-items-are-updated)          |||- - - [Attributes](#attributes)
-|- - [armor_drop](#drop-armor-when-a-player-dies)                            |||- - - [Physics](#physics)
-|- - [armor_destroy](#destroy-armor-when-a-player-dies)                      |||- - - [Durability](#durability)
-|- - [armor_level_multiplier](#armor-level-multiplyer)                       |||- - [Armour Functions](#armour-functions)
-|- - [armor_heal_multiplier](#armor-healing-multiplyer)                      |||- - - [armor:set_player_armor](#armor-set_player_armor)
-|- - [armor_water_protect](#enable-water-protection)                         |||- - - [armor:punch](#armor-punch)
-|- - [armor_fire_protect](#enable-fire-protection)                           |||- - - [armor:damage](#armor-damage)
-|- - [armor_punch_damage](#enable-punch-damage-effects)                      |||- - - [armor:remove_all](#armor-remove_all)
-|- - [armor_migrate_old_inventory](#migration-of-old-armor-inventories)      |||- - - [armor:equip](#armor-equip)
-|- - [wieldview_update_time](#how-often-player-wield-items-are-updated)      |||- - - [armor:unequip](#armor-unequip)
-| - [Credits](#credits)                                                      |||- - - [armor:update_skin](#armor-update_skin)
-|                                                                            |||- - [Callbacks](#Callbacks)
+|- - [armor_set_elements](#allows-the-customisation-of-armor-set)            |||- - [Registering Armor Groups](#registering-armor-groups)
+|- - [armor_set_bonus](#armor-set-bonus-multiplier )                         |||- - [Groups used by 3d_Armor](#groups-used-by-3d_armor)
+|- - [armor_init_delay](#initialization-glitches-when-a-player-first-joins)  |||- - - [Elements](#elements)
+|- - [armor_init_times](#number-of-initialization-attempts)                  |||- - - [Attributes](#attributes)
+|- - [armor_bones_delay](#armor-not-in-bones-due-to-server-lag)              |||- - - [Physics](#physics)
+|- - [armor_update_time](#how-often-player-armor-items-are-updated)          |||- - - [Durability](#durability)
+|- - [armor_drop](#drop-armor-when-a-player-dies)                            |||- - - [Armour Material](#armour-material)
+|- - [armor_destroy](#destroy-armor-when-a-player-dies)                      |||- - [Armour Functions](#armour-functions)
+|- - [armor_level_multiplier](#armor-level-multiplyer)                       |||- - - [armor:set_player_armor](#armor-set_player_armor)
+|- - [armor_heal_multiplier](#armor-healing-multiplyer)                      |||- - - [armor:punch](#armor-punch)
+|- - [armor_water_protect](#enable-water-protection)                         |||- - - [armor:damage](#armor-damage)
+|- - [armor_fire_protect](#enable-fire-protection)                           |||- - - [armor:remove_all](#armor-remove_all)
+|- - [armor_punch_damage](#enable-punch-damage-effects)                      |||- - - [armor:equip](#armor-equip)
+|- - [armor_migrate_old_inventory](#migration-of-old-armor-inventories)      |||- - - [armor:unequip](#armor-unequip)
+|- - [wieldview_update_time](#how-often-player-wield-items-are-updated)      |||- - - [armor:update_skin](#armor-update_skin)
+|-[Credits](#credits)                                                        |||- - [Callbacks](#Callbacks)
 |                                                                            |||- - - [Item callbacks](#item-callbacks)
 |                                                                            |||- - - [Global callbacks](#global-callbacks)
-
 # Overview
 
 **Depends:** default
@@ -52,6 +52,16 @@ Override the following default settings by adding them to your ***minetest.conf*
     armor_material_gold = true
     armor_material_mithril = true
     armor_material_crystal = true
+
+### Allows the customisation of armor set 
+ **Shields already configured as part of the set**
+ 
+    armor_set_elements = head torso legs feet shield
+
+### Armor set bonus multiplier 
+ **Set to 1 to disable set bonus**
+ 
+    armor_set_multiplier = 1.1
 
 ### Initialization glitches when a player first joins
  **Increase to prevent glitches**
@@ -205,7 +215,7 @@ New armor group is registered called *radiation* and all players start off with 
     	inventory_image = "mod_name_speed_boots_inv.png",
     	texture = "mod_name_speed_boots.png",
     	preview = "mod_name_speed_boots_preview.png",
-    	groups = {armor_feet=1, armor_use=500, physics_speed=1.2, flammable=1},
+    	groups = {armor_feet=1, armor_use=500, physics_speed=1.2, flammable=1, armor_m_leather=1},
     	armor_groups = {fleshy=10, radiation=10},
     	damage_groups = {cracky=3, snappy=3, choppy=3, crumbly=3, level=1},
     	reciprocate_damage = true,
@@ -243,7 +253,7 @@ The above allows armor to block/prevent new damage types but you also need to as
  - **Elements:** armor_head, armor_torso, armor_legs, armor_feet
  - **Attributes:** armor_heal, armor_fire, armor_water
  - **Physics:** physics_jump, physics_speed, physics_gravity
- - **Durability:** armor_use, flammable
+ - **Durability:** armor_use, flammable, armor_m_"material name"
  
 ***Note: for calculation purposes "Attributes" and "Physics" values stack***
 
@@ -272,7 +282,7 @@ The new armor item can now be registered using the new element
 	    inventory_image = "mod_name_inv_gloves_wood.png",
 	    texture = "mod_name_gloves_wood.png",
     	preview = "mod_name_gloves_wood_preview.png",   
-	    groups = {armor_hands=1, armor_heal=0, armor_use=2000, flammable=1},   
+	    groups = {armor_hands=1, armor_heal=0, armor_use=2000, flammable=1, armor_m_wood=1},   
 	    armor_groups = {fleshy=5},    
 	    damage_groups = {cracky=3, snappy=2, choppy=3, crumbly=2, level=1},
 	})
@@ -289,7 +299,7 @@ The below Diamond chestplate has a 12% chance to completely block all damage (ar
 	armor:register_armor("3d_armor:chestplate_diamond", {
 		description = S("Diamond Chestplate"),
 		inventory_image = "3d_armor_inv_chestplate_diamond.png",
-		groups = {armor_torso=1, armor_heal=12, armor_use=200},
+		groups = {armor_torso=1, armor_heal=12, armor_use=200, armor_m_diamond=1},
 		armor_groups = {fleshy=20},
 		damage_groups = {cracky=2, snappy=1, choppy=1, level=3},
 	}) 
@@ -307,7 +317,7 @@ The below Diamond chestplate has a 12% chance to completely block all damage (ar
 	armor:register_armor("mod_name:fire_proof_jacket", {
 		description = "Fire Proof Jacket",
 		inventory_image = "mod_name_inv_fire_proof_jacket.png",
-		groups = {armor_torso=1, armor_fire=3, armor_use=1000},
+		groups = {armor_torso=1, armor_fire=3, armor_use=1000, armomr_m_leather=1},
 		armor_groups = {fleshy=10},
 		damage_groups = {cracky=2, snappy=1, choppy=1, level=3},
 	})
@@ -320,7 +330,7 @@ The below Diamond chestplate has a 12% chance to completely block all damage (ar
 	armor:register_armor("mod_name:helmet_underwater_breath", {
 		description = "Helmet of Underwater Breathing",
 		inventory_image = "mod_name_inv_helmet_underwater_breath.png",
-		groups = {armor_head=1, armor_water=1, armor_use=1000},
+		groups = {armor_head=1, armor_water=1, armor_use=1000, armor_m_steel=1},
 		armor_groups = {fleshy=5},
 		damage_groups = {cracky=2, snappy=1, choppy=1, level=3},
 	})
@@ -350,7 +360,33 @@ Durability is determined by the value assigned to the group ***armor_use***. The
  All diamond armor items have an  ***armor_use=200***;
  
 	65535/2000 = 327.6 (327)   
- After 327 uses(hits) the armor item will break.   
+ After 327 uses(hits) the armor item will break. 
+
+### Armor Material 
+armor_m_"material name" is used to designate the material that the armor is made from and is then used by 3d_armor to establish if the armor worn makes a set. Currently used material names are:
+
+armor_m_admin=1
+armor_m_wood=1
+armor_m_cactus=1
+armor_m_steel=1
+armor_m_bronze=1
+armor_m_gold=1
+armor_m_diamond=1
+armor_m_mithril=1
+armor_m_crystal=1
+
+ **Example** 
+ 
+armor:register_armor("3d_armor:helmet_bronze", {
+	description = S("Bronze Helmet"),
+	inventory_image = "3d_armor_inv_helmet_bronze.png",
+	groups = {armor_head=1, armor_heal=6, armor_use=400,
+		physics_speed=-0.01, physics_gravity=0.01, armor_m_bronze=1},
+	armor_groups = {fleshy=10},
+	damage_groups = {cracky=3, snappy=2, choppy=2, crumbly=1, level=2},
+})
+
+***Note: At the moment an armor can only be made of one material***
 
 ## Armor Functions
 

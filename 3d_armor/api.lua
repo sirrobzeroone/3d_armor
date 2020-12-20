@@ -96,10 +96,13 @@ armor.config = {
 	material_mithril = true,
 	material_crystal = true,
 	water_protect = true,
+	set_elements = "head torso legs feet shield",
+	set_multiplier = 1.1,
 	fire_protect = minetest.get_modpath("ethereal") ~= nil,
 	fire_protect_torch = minetest.get_modpath("ethereal") ~= nil,
 	punch_damage = true,
 }
+
 
 -- Armor Registration
 
@@ -267,12 +270,56 @@ armor.set_player_armor = function(self, player)
 				material.name = mat
 			end
 		end
-	end
+	end	
+-- New (Dec 2020) for working out armor_set and multiplier	
+	local set_worn = {}
+	local armor_multi = 0
+	local worn_armor = armor:get_weared_armor_elements(player)
+	local use_legacy_calc = 0
+	local set_bonus_name
+	for loc,item in pairs(worn_armor) do
+		local item_mat = string.match(minetest.serialize(minetest.registered_items[item].groups),"armor_m_(%a+)\"]")
+		if item_mat ~= nil then	
+			for k,name in pairs(armor.config.set_elements)do
+				if name == loc then
+					if set_worn[item_mat] == nil then
+						set_worn[item_mat] = 0
+						set_worn[item_mat] = set_worn[item_mat] + 1
+					else
+						set_worn[item_mat] = set_worn[item_mat] + 1
+					end
+				end
+			end
+		else
+			use_legacy_calc = 1
+			minetest.debug("WARNING:3d_armor - Registered Armor "..item.." dosen't have armor_m_\"material\" assigned")
+		end
+		
+	end	
+		if use_legacy_calc ~= 1 then
+			for mat_name,arm_piece_num in pairs(set_worn) do
+				if arm_piece_num == #armor.config.set_elements then 
+					armor_multi = armor.config.set_multiplier
+					set_bonus_name = mat_name
+				end
+			end	
+		end
+-- End New (Dec 2020)
 	for group, level in pairs(levels) do
-		if level > 0 then
-			level = level * armor.config.level_multiplier
-			if material.name and material.count == #self.elements then
-				level = level * 1.1
+		if use_legacy_calc ~= 1 then
+			if level > 0 then
+				level = level * armor.config.level_multiplier			
+					if armor_multi ~= 0 then
+						level = level * armor.config.set_multiplier
+					end
+			end
+		else
+		-- Used for legacy support were armor_item dosen't have material group armor_m_xxx assigned
+			if level > 0 then
+				level = level * armor.config.level_multiplier			
+					if material.name and material.count == #self.elements then
+						level = level * armor.config.set_multiplier
+					end
 			end
 		end
 		local base = self.registered_groups[group]
@@ -330,6 +377,7 @@ armor.set_player_armor = function(self, player)
 end
 
 armor.punch = function(self, player, hitter, time_from_last_punch, tool_capabilities)
+	minetest.chat_send_all(armor.registered_groups["fleshy"])
 	local name, armor_inv = self:get_valid_player(player, "[punch]")
 	if not name then
 		return
@@ -412,11 +460,21 @@ armor.punch = function(self, player, hitter, time_from_last_punch, tool_capabili
 	end
 	self.def[name].state = state
 	self.def[name].count = count
+	local p_grp = player:get_armor_groups()
+	minetest.chat_send_all("end: "..tostring(p_grp.fleshy))
 end
 
 armor.damage = function(self, player, index, stack, use)
-	local old_stack = ItemStack(stack)
+	local old_stack = ItemStack(stack)	
+	local worn_armor = armor:get_weared_armor_elements(player)
+	local armor_p_cnt = 0
+	for k,v in pairs(worn_armor) do
+		armor_p_cnt = armor_p_cnt + 1
+	end
+	use = math.ceil(use/armor_p_cnt)
+	--minetest.chat_send_all(stack:get_name().." pre_wear: "..stack:get_wear())
 	stack:add_wear(use)
+	--minetest.chat_send_all(stack:get_name().." post_wear: "..stack:get_wear())
 	self:run_callbacks("on_damage", player, index, stack)
 	self:set_inventory_stack(player, index, stack)
 	if stack:get_count() == 0 then
@@ -628,3 +686,4 @@ armor.drop_armor = function(pos, stack)
 		end
 	end
 end
+
