@@ -1,4 +1,3 @@
-
 [3d_armor]
 
 armor_material_wood (Enable wood armor) bool true
@@ -9,6 +8,12 @@ armor_material_diamond (Enable diamond armor) bool true
 armor_material_gold (Enable gold armor) bool true
 armor_material_mithril (Enable mithril armor) bool true
 armor_material_crystal (Enable crystal armor) bool true
+
+# Armor set item names, remove or add items to include them or remove them from whats considered an Armor set.
+armor_set_elements (Armor set items) string head torso legs feet shield
+
+# Bonus multiplier when wearing armor set, set to the same as armor_level_multiplier to disable
+armor_set_multiplier (Armor Set Bonus multiplier) float 1.1
 
 # Increase this if you get initialization glitches when a player first joins.
 armor_init_delay (Initialization delay) int 2

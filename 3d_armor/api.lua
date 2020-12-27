@@ -95,6 +95,8 @@ armor.config = {
 	material_gold = true,
 	material_mithril = true,
 	material_crystal = true,
+	set_elements = "head torso legs feet shield",
+	set_multiplier = 1.1,	
 	water_protect = true,
 	fire_protect = minetest.get_modpath("ethereal") ~= nil,
 	fire_protect_torch = minetest.get_modpath("ethereal") ~= nil,
@@ -258,21 +260,49 @@ armor.set_player_armor = function(self, player)
 				local value = def.groups["armor_"..attr] or 0
 				attributes[attr] = attributes[attr] + value
 			end
-			local mat = string.match(item, "%:.+_(.+)$")
-			if material.name then
-				if material.name == mat then
-					material.count = material.count + 1
-				end
-			else
-				material.name = mat
-			end
 		end
 	end
+-- New (Dec 2020) for working out armor_set and multiplier	
+	local set_worn = {}
+	local armor_multi = 0
+	local worn_armor = armor:get_weared_armor_elements(player)
+	local use_legacy_calc = 0
+	local set_bonus_name
+	for loc,item in pairs(worn_armor) do
+		local item_mat = string.match(item, "%:.+_(.+)$")
+		for k,set_loc in pairs(armor.config.set_elements)do
+			if set_loc == loc then
+				if item_mat ~= nil then				
+					if set_worn[item_mat] == nil then
+						set_worn[item_mat] = 0
+						set_worn[item_mat] = set_worn[item_mat] + 1
+					else
+						set_worn[item_mat] = set_worn[item_mat] + 1
+					end
+				else
+					minetest.debug("WARNING:3d_armor - Registered Armor "..item.." dosen't have _\"material\" specified at the end of the item registeration name")
+					if set_worn["unknown"] == nil then
+						set_worn["unknown"] = 0
+						set_worn["unknown"] = set_worn["unknown"] + 1
+					else
+						set_worn["unknown"] = set_worn["unknown"] + 1
+					end					
+				end
+			end
+		end		
+	end	
+	for mat_name,arm_piece_num in pairs(set_worn) do
+		if arm_piece_num == #armor.config.set_elements then 
+			armor_multi = armor.config.set_multiplier
+			set_bonus_name = mat_name
+		end
+	end	
+-- End New (Dec 2020)
 	for group, level in pairs(levels) do
 		if level > 0 then
 			level = level * armor.config.level_multiplier
-			if material.name and material.count == #self.elements then
-				level = level * 1.1
+			if armor_multi ~= 0 then
+				level = level * armor.config.set_multiplier
 			end
 		end
 		local base = self.registered_groups[group]
