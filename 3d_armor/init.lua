@@ -116,7 +116,6 @@ dofile(modpath.."/armor.lua")
 armor.formspec = armor.formspec..
 	"label[5,1;"..F(S("Level"))..": armor_level]"..
 	"label[5,1.5;"..F(S("Heal"))..": armor_attr_heal]"
-	"label[2,5;"..F(S("Set Bonus"))..": armor_attr_heal]"
 if armor.config.fire_protect then
 	armor.formspec = armor.formspec.."label[5,2;"..F(S("Fire"))..": armor_attr_fire]"
 end
