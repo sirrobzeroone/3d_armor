@@ -264,13 +264,9 @@ Adding Elements is more complex but the below code can be used to add new elemen
 
     if minetest.global_exists("armor") and armor.elements then
     	table.insert(armor.elements, "hands")
-    	local mult = armor.config.level_multiplier or 1
-    	armor.config.level_multiplier = mult * 0.5
     end
 **1st line** not strictly needed but checks that the global table "armor" and subtable "elements" exists   
-**2nd line** adds a new value to the armor.elements table called "hands"   
-**3rd line** in this case will be set to one ***note: need more detail here***    
-**4th line** simply sets the multiplier, by setting 0.5 smaller armor becomes less effective and larger more effective. good values are between 0.1 and 1 in increments of 0.1.   
+**2nd line** adds a new value to the armor.elements table called "hands"  
 
 See ***init.lua*** under **3d_armor>>shields** for a further example
 
