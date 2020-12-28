@@ -384,7 +384,7 @@ If all of the above were made of material wood the player wood recieve a ***armo
  **Example One** 
  
 	armor:register_armor("new_mod:helmet_spartan_bronze", {
-		description = S("Bronze Helmet"),
+		description = S("Spartan Helmet"),
 		inventory_image = "new_mod_inv_helmet_spartan_bronze.png",
 		groups = {armor_head=1, armor_heal=6, armor_use=350, physics_speed=-0.01, physics_gravity=0.01},
 		armor_groups = {fleshy=12},
