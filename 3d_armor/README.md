@@ -98,7 +98,7 @@ Change the following default settings by going to Main Menu>>Settings(Tab)>>All 
 	
 ### Allows the customisation of armor set 
  **Shields already configured as need to be worn to complete an armor set**   
- **These names come from [Groups used by 3d_Armor](#groups-used-by-3d_armor), the second half of the element name eg armor_head is head**
+ **These names come from [Element names](#groups-used-by-3d_armor), the second half of the element name only is used eg armor_head is head**
  
     armor_set_elements = head torso legs feet shield
 
