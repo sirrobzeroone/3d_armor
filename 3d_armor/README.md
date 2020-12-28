@@ -97,8 +97,8 @@ Change the following default settings by going to Main Menu>>Settings(Tab)>>All 
     armor_heal_multiplier = 1
 	
 ### Allows the customisation of armor set 
- **Shields already configured as need to be worn to complete an armor set**
- **These names come from [Elements](#elements), the second half of the name eg armor_head is head**
+ **Shields already configured as need to be worn to complete an armor set**   
+ **These names come from [Elements](#elements), the second half of the element name eg armor_head is head**
  
     armor_set_elements = head torso legs feet shield
 
