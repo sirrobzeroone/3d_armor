@@ -359,7 +359,7 @@ Durability is determined by the value assigned to the group ***armor_use***. The
  After 327 uses(hits) the armor item will break. 
 
 ### Armor Material 
-The material the armor is made from is defined by adding the material to the end of register armor item name. It is very important the material is the last item in the registered item name and it is preceeded by an "_", "_materialname".
+The material the armor is made from is defined by adding the material to the end of registered armor item name. It is very important the material is the last item in the registered item name and it is preceeded by an "_" eg "_materialname".
 The material name is what 3d_armor uses to determine if a player is wearing a set of armor, all items worn that are configured as an item to be included in the set check must be made of the same material for the player to recieve a set armor bonus.
 
 So to get a set bonus under the default set settings the players armor items listed below must be made of the same material:
@@ -369,7 +369,7 @@ legs - Leggings
 feet - Boots   
 shield - Shields   
 
-If all of the above were made of material wood the player wood recieve a ***armor_set_bonus*** of armor_level * 1.1   
+If all of the above were made of material wood the player wood recieve a ***armor_set_bonus*** of armor_level * 1.1, essentially +10%  
 
  **Example One** 
  
