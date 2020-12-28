@@ -207,6 +207,11 @@ armor.set_player_armor = function(self, player)
 	local levels = {}
 	local groups = {}
 	local change = {}
+	local set_worn = {}
+	local armor_multi = 0
+	local worn_armor = armor:get_weared_armor_elements(player)
+	local use_legacy_calc = 0
+	local set_bonus_name
 	for _, phys in pairs(self.physics) do
 		physics[phys] = 1
 	end
@@ -261,13 +266,9 @@ armor.set_player_armor = function(self, player)
 				attributes[attr] = attributes[attr] + value
 			end
 		end
-	end
--- New (Dec 2020) for working out armor_set and multiplier	
-	local set_worn = {}
-	local armor_multi = 0
-	local worn_armor = armor:get_weared_armor_elements(player)
-	local use_legacy_calc = 0
-	local set_bonus_name
+	end	
+	-- The following code compares player worn armor items against requirements
+	-- of which armor pieces are needed to be worn to meet set bonus requirements	
 	for loc,item in pairs(worn_armor) do
 		local item_mat = string.match(item, "%:.+_(.+)$")
 		for k,set_loc in pairs(armor.config.set_elements)do
@@ -297,7 +298,7 @@ armor.set_player_armor = function(self, player)
 			set_bonus_name = mat_name
 		end
 	end	
--- End New (Dec 2020)
+	
 	for group, level in pairs(levels) do
 		if level > 0 then
 			level = level * armor.config.level_multiplier
