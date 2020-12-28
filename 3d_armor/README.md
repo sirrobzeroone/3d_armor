@@ -54,7 +54,7 @@ Override the following default settings by adding them to your ***minetest.conf*
     armor_material_crystal = true
 
 ### Allows the customisation of armor set 
- **Shields already configured as part of the set**
+ **Shields already configured as part of the set - this is configured from [Elements](#elements) second half of the name eg armor_head is head**
  
     armor_set_elements = head torso legs feet shield
 
