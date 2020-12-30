@@ -96,7 +96,7 @@ armor.config = {
 	material_mithril = true,
 	material_crystal = true,
 	set_elements = "head torso legs feet shield",
-	set_multiplier = 1.1,	
+	set_multiplier = 1.1,
 	water_protect = true,
 	fire_protect = minetest.get_modpath("ethereal") ~= nil,
 	fire_protect_torch = minetest.get_modpath("ethereal") ~= nil,
@@ -125,7 +125,7 @@ armor.register_armor = function(self, name, def)
 	local check_mat_exists = string.match(name, "%:.+_(.+)$")
 	if check_mat_exists == nil then
 		minetest.debug("WARNING:3d_armor - Registered Armor "..name.." dosen't have \"_material\" specified at the end of the item registration name")
-	end	
+	end
 	minetest.register_tool(name, def)
 end
 
@@ -206,7 +206,6 @@ armor.set_player_armor = function(self, player)
 	end
 	local state = 0
 	local count = 0
-	local material = {count=1}
 	local preview = armor:get_preview(name)
 	local texture = "3d_armor_trans.png"
 	local physics = {}
@@ -217,8 +216,6 @@ armor.set_player_armor = function(self, player)
 	local set_worn = {}
 	local armor_multi = 0
 	local worn_armor = armor:get_weared_armor_elements(player)
-	local use_legacy_calc = 0
-	local set_bonus_name
 	for _, phys in pairs(self.physics) do
 		physics[phys] = 1
 	end
@@ -273,14 +270,14 @@ armor.set_player_armor = function(self, player)
 				attributes[attr] = attributes[attr] + value
 			end
 		end
-	end	
+	end
 	-- The following code compares player worn armor items against requirements
-	-- of which armor pieces are needed to be worn to meet set bonus requirements	
+	-- of which armor pieces are needed to be worn to meet set bonus requirements
 	for loc,item in pairs(worn_armor) do
 		local item_mat = string.match(item, "%:.+_(.+)$")
 		for k,set_loc in pairs(armor.config.set_elements)do
 			if set_loc == loc then
-				if item_mat ~= nil then				
+				if item_mat ~= nil then
 					if set_worn[item_mat] == nil then
 						set_worn[item_mat] = 0
 						set_worn[item_mat] = set_worn[item_mat] + 1
@@ -293,18 +290,16 @@ armor.set_player_armor = function(self, player)
 						set_worn["unknown"] = set_worn["unknown"] + 1
 					else
 						set_worn["unknown"] = set_worn["unknown"] + 1
-					end					
+					end
 				end
 			end
 		end		
 	end	
 	for mat_name,arm_piece_num in pairs(set_worn) do
-		if arm_piece_num == #armor.config.set_elements then 
+		if arm_piece_num == #armor.config.set_elements then
 			armor_multi = armor.config.set_multiplier
-			set_bonus_name = mat_name
 		end
-	end	
-	
+	end
 	for group, level in pairs(levels) do
 		if level > 0 then
 			level = level * armor.config.level_multiplier
