@@ -124,7 +124,8 @@ armor.register_armor = function(self, name, def)
 	-- at the end of the item name and logging an error to debug if not.
 	local check_mat_exists = string.match(name, "%:.+_(.+)$")
 	if check_mat_exists == nil then
-		minetest.debug("WARNING:3d_armor - Registered Armor "..name.." dosen't have \"_material\" specified at the end of the item registration name")
+		minetest.debug("WARNING:3d_armor - Registered Armor "..name..
+		" dosen't have \"_material\" specified at the end of the item registration name")
 	end
 	minetest.register_tool(name, def)
 end
@@ -293,8 +294,8 @@ armor.set_player_armor = function(self, player)
 					end
 				end
 			end
-		end		
-	end	
+		end
+	end
 	for mat_name,arm_piece_num in pairs(set_worn) do
 		if arm_piece_num == #armor.config.set_elements then
 			armor_multi = armor.config.set_multiplier
