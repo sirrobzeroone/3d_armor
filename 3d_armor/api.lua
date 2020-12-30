@@ -119,6 +119,13 @@ armor.register_armor = function(self, name, def)
 		end
 		return armor:equip(player, itemstack)
 	end
+	-- The below is a very basic check to try and see if a material name exists as part
+	-- of the item name. However this check is very simple and just checks theres "_something"
+	-- at the end of the item name and logging an error to debug if not.
+	local check_mat_exists = string.match(name, "%:.+_(.+)$")
+	if check_mat_exists == nil then
+		minetest.debug("WARNING:3d_armor - Registered Armor "..name.." dosen't have \"_material\" specified at the end of the item registration name")
+	end	
 	minetest.register_tool(name, def)
 end
 
@@ -281,7 +288,6 @@ armor.set_player_armor = function(self, player)
 						set_worn[item_mat] = set_worn[item_mat] + 1
 					end
 				else
-					minetest.debug("WARNING:3d_armor - Registered Armor "..item.." dosen't have _\"material\" specified at the end of the item registeration name")
 					if set_worn["unknown"] == nil then
 						set_worn["unknown"] = 0
 						set_worn["unknown"] = set_worn["unknown"] + 1
