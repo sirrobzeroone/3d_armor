@@ -278,6 +278,7 @@ armor.set_player_armor = function(self, player)
 		local item_mat = string.match(item, "%:.+_(.+)$")
 		local worn_key = item_mat or "unknown"
 
+		-- Perform location checks to ensure the armor is worn correctly
 		for k,set_loc in pairs(armor.config.set_elements)do
 			if set_loc == loc then
 				if set_worn[worn_key] == nil then
@@ -289,11 +290,8 @@ armor.set_player_armor = function(self, player)
 			end
 		end
 	end
-	-- The following code checks if the player should recieve the set bonus/multiplyer
-	-- by testing the table length of armor.config.set_elements (numeric key) and
-	-- player armor pieces worn (arm_piece_num) against each other if numbers
-	-- are equal the player is wearing a full set of armor. We don't need to
-	-- check locations here as that was performed at api.lua line 282 "set_loc == loc".
+
+	-- Apply the armor multiplier only if the player is wearing a full set of armor
 	for mat_name,arm_piece_num in pairs(set_worn) do
 		if arm_piece_num == #armor.config.set_elements then
 			armor_multi = armor.config.set_multiplier

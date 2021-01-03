@@ -66,7 +66,6 @@ end
 
 -- Convert set_elements to a Lua table splitting on blank spaces
 local t_set_elements = armor.config.set_elements
-armor.config.set_elements = {}
 armor.config.set_elements = string.split(t_set_elements, " ")
 
 -- Remove torch damage if fire_protect_torch == false

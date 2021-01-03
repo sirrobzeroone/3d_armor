@@ -382,7 +382,7 @@ If all of the above were made of material "wood" the player would recieve an ***
 		damage_groups = {cracky=3, snappy=2, choppy=2, crumbly=1, level=2},
 	})
 	
- **Example One** 
+ **Example Two** 
  
 	armor:register_armor("new_mod:helmet_spartan_bronze", {
 		description = S("Spartan Helmet"),
