@@ -2,27 +2,27 @@
 
 |  |  |  |  | 
 |--|--|--|--|
-|-[Overview](#overview)														|||-[API](#api)
-|-[Armor Configuration](#armor-configuration)								|||- - [3d_Armor Item Storage](#3d_armor-item-storage)
-|- - [disable_specific_materials](#to-disable-individual-armor-materials)	|||- - [Armor Registration](#armor-registration)
-|- - [armor_init_delay](#initialization-glitches-when-a-player-first-joins)	|||- - [Registering Armor Groups](#registering-armor-groups)
-|- - [armor_init_times](#number-of-initialization-attempts)					|||- - [Groups used by 3d_Armor](#groups-used-by-3d_armor)
-|- - [armor_bones_delay](#armor-not-in-bones-due-to-server-lag)				|||- - - [Elements](#elements)
-|- - [armor_update_time](#how-often-player-armor-items-are-updated)			|||- - - [Attributes](#attributes)
-|- - [armor_drop](#drop-armor-when-a-player-dies)							|||- - - [Physics](#physics)
-|- - [armor_destroy](#destroy-armor-when-a-player-dies)						|||- - - [Durability](#durability)
-|- - [armor_level_multiplier](#armor-level-multiplyer)						|||- - - [Armor Material](#armor-material)
-|- - [armor_heal_multiplier](#armor-healing-multiplyer)						|||- - [Armour Functions](#armor-functions)
-|- - [armor_set_elements](#allows-the-customisation-of-armor-set)			|||- - - [armor:set_player_armor](#armor-set_player_armor)
-|- - [armor_set_bonus](#armor-set-bonus-multiplier )						|||- - - [armor:punch](#armor-punch)
-|- - [armor_water_protect](#enable-water-protection)						|||- - - [armor:damage](#armor-damage)
-|- - [armor_fire_protect](#enable-fire-protection)							|||- - - [armor:remove_all](#armor-remove_all)
-|- - [armor_punch_damage](#enable-punch-damage-effects)						|||- - - [armor:equip](#armor-equip)
-|- - [armor_migrate_old_inventory](#migration-of-old-armor-inventories)		|||- - - [armor:unequip](#armor-unequip)
-|- - [wieldview_update_time](#how-often-player-wield-items-are-updated)		|||- - - [armor:update_skin](#armor-update_skin)
-|-[Credits](#credits)														|||- - [Callbacks](#Callbacks)
-|																			|||- - - [Item callbacks](#item-callbacks)
-|																			|||- - - [Global callbacks](#global-callbacks)
+|-[Overview](#overview)                                                     |||-[API](#api)
+|-[Armor Configuration](#armor-configuration)                               |||- - [3d_Armor Item Storage](#3d_armor-item-storage)
+|- - [disable_specific_materials](#to-disable-individual-armor-materials)   |||- - [Armor Registration](#armor-registration)
+|- - [armor_init_delay](#initialization-glitches-when-a-player-first-joins) |||- - [Registering Armor Groups](#registering-armor-groups)
+|- - [armor_init_times](#number-of-initialization-attempts)                 |||- - [Groups used by 3d_Armor](#groups-used-by-3d_armor)
+|- - [armor_bones_delay](#armor-not-in-bones-due-to-server-lag)             |||- - - [Elements](#elements)
+|- - [armor_update_time](#how-often-player-armor-items-are-updated)         |||- - - [Attributes](#attributes)
+|- - [armor_drop](#drop-armor-when-a-player-dies)                           |||- - - [Physics](#physics)
+|- - [armor_destroy](#destroy-armor-when-a-player-dies)                     |||- - - [Durability](#durability)
+|- - [armor_level_multiplier](#armor-level-multiplyer)                      |||- - - [Armor Material](#armor-material)
+|- - [armor_heal_multiplier](#armor-healing-multiplyer)                     |||- - [Armour Functions](#armor-functions)
+|- - [armor_set_elements](#allows-the-customisation-of-armor-set)           |||- - - [armor:set_player_armor](#armor-set_player_armor)
+|- - [armor_set_bonus](#armor-set-bonus-multiplier)                         |||- - - [armor:punch](#armor-punch)
+|- - [armor_water_protect](#enable-water-protection)                        |||- - - [armor:damage](#armor-damage)
+|- - [armor_fire_protect](#enable-fire-protection)                          |||- - - [armor:remove_all](#armor-remove_all)
+|- - [armor_punch_damage](#enable-punch-damage-effects)                     |||- - - [armor:equip](#armor-equip)
+|- - [armor_migrate_old_inventory](#migration-of-old-armor-inventories)     |||- - - [armor:unequip](#armor-unequip)
+|- - [wieldview_update_time](#how-often-player-wield-items-are-updated)     |||- - - [armor:update_skin](#armor-update_skin)
+|-[Credits](#credits)                                                       |||- - [Callbacks](#Callbacks)
+|                                                                           |||- - - [Item callbacks](#item-callbacks)
+|                                                                           |||- - - [Global callbacks](#global-callbacks)
 
 # Overview
 
@@ -186,7 +186,7 @@ Wrapper function for `minetest.register_tool`, which enables the easy registrati
     	preview = "mod_name_leather_chestplate_preview.png",
     	groups = {armor_torso=1, armor_heal=0, armor_use=2000, flammable=1},
     	armor_groups = {fleshy=10},
-        damage_groups = {cracky=3, snappy=2, choppy=3, crumbly=2, level=1}
+		damage_groups = {cracky=3, snappy=2, choppy=3, crumbly=2, level=1}
     })
 *See ***armor.lua*** under **3d_armor>>3d_armor** for further examples*
 
@@ -363,13 +363,12 @@ Durability is determined by the value assigned to the group ***armor_use***. The
 ### Armor Material 
 The material the armor is made from is defined by adding the material to the end of registered armor item name. It is very important the material is the last item in the registered item name and it is preceeded by an "_" eg "_materialname".
 The material name is what 3d_armor uses to determine if a player is wearing a set of armor. To recieve the set bonus all items worn must be made of the same material.
-
 So to get a set bonus under the default set settings the players armor items listed below must be made of the same material:
-head - Helmet   
-torso - Chestplate   
-legs - Leggings   
-feet - Boots   
-shield - Shields   
+* head - Helmet
+* torso - Chestplate
+* legs - Leggings
+* feet - Boots
+* shield - Shields   
 
 If all of the above were made of material "wood" the player would recieve an ***armor_set_bonus*** of armor_level * 1.1, essentially +10%  
 
