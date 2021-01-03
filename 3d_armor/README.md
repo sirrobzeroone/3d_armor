@@ -186,7 +186,7 @@ Wrapper function for `minetest.register_tool`, which enables the easy registrati
     	preview = "mod_name_leather_chestplate_preview.png",
     	groups = {armor_torso=1, armor_heal=0, armor_use=2000, flammable=1},
     	armor_groups = {fleshy=10},
-		damage_groups = {cracky=3, snappy=2, choppy=3, crumbly=2, level=1}
+    	damage_groups = {cracky=3, snappy=2, choppy=3, crumbly=2, level=1}
     })
 *See ***armor.lua*** under **3d_armor>>3d_armor** for further examples*
 
