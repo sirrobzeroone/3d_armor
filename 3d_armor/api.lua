@@ -124,8 +124,8 @@ armor.register_armor = function(self, name, def)
 	-- at the end of the item name and logging an error to debug if not.
 	local check_mat_exists = string.match(name, "%:.+_(.+)$")
 	if check_mat_exists == nil then
-		minetest.debug("WARNING:3d_armor - Registered Armor "..name..
-		" dosen't have \"_material\" specified at the end of the item registration name")
+		minetest.log("warning:[3d_armor] Registered armor "..name..
+		" does not have \"_material\" specified at the end of the item registration name")
 	end
 	minetest.register_tool(name, def)
 end
@@ -276,26 +276,24 @@ armor.set_player_armor = function(self, player)
 	-- of which armor pieces are needed to be worn to meet set bonus requirements
 	for loc,item in pairs(worn_armor) do
 		local item_mat = string.match(item, "%:.+_(.+)$")
-		for k,set_loc in pairs(armor.config.set_elements)do
+		local worn_key = item_mat or "unknown"
+		
+		for k,set_loc in pairs(armor.config.set_elements)do		
 			if set_loc == loc then
-				if item_mat ~= nil then
-					if set_worn[item_mat] == nil then
-						set_worn[item_mat] = 0
-						set_worn[item_mat] = set_worn[item_mat] + 1
-					else
-						set_worn[item_mat] = set_worn[item_mat] + 1
-					end
+				if set_worn[worn_key] == nil then
+					set_worn[worn_key] = 0
+					set_worn[worn_key] = set_worn[worn_key] + 1
 				else
-					if set_worn["unknown"] == nil then
-						set_worn["unknown"] = 0
-						set_worn["unknown"] = set_worn["unknown"] + 1
-					else
-						set_worn["unknown"] = set_worn["unknown"] + 1
-					end
+					set_worn[worn_key] = set_worn[worn_key] + 1
 				end
 			end
 		end
 	end
+	-- The following code checks if the player should recieve the set bonus/multiplyer
+	-- by testing the table length of armor.config.set_elements (numeric key) and 
+	-- player armor pieces worn (arm_piece_num) against each other if numbers 
+	-- are equal the player is wearing a full set of armor. We don't need to 
+	-- check locations here as that was performed at api.lua line 282 "set_loc == loc".
 	for mat_name,arm_piece_num in pairs(set_worn) do
 		if arm_piece_num == #armor.config.set_elements then
 			armor_multi = armor.config.set_multiplier
